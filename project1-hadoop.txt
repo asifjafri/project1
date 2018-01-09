@@ -1,0 +1,109 @@
+
+
+
+
+hadoop distcp -m 100 file:///Users/admin/project1/1000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/2000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/2000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/3000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/4000 /user/project1
+.....
+hadoop distcp -m 100 file:///Users/admin/project1/9000 /user/project1
+
+
+
+
+
+
+
+
+#Lets create one file with 20000 lines and 50 columns
+# Same can be use to create 10000 files as well
+
+
+line_text=""
+
+for file in {1..1}  #chamge 1..1 to 1..10000 to create 10k files
+
+do
+
+  echo "Creating File..$file"
+
+  rm project1/hadoopfile$file
+
+    for lines in {1..20000}
+
+       do
+
+          line_text=""
+
+          for column in {1..50}
+
+           do
+
+            line_text="$line_text Column$column" 
+
+           done
+
+            #print >> $line_text
+
+           print $line_text >> tempfile
+
+       done
+
+           mv tempfile project1/hadoopfile$file
+
+done
+
+
+
+# Copy one files into 9999 files in the local folder (project1)
+
+
+
+for cfile in {2..10000}
+
+  do
+
+    echo "Copying file $cfile"
+
+    cp project1/hadoopfile1 project1/hadoopfile$cfile
+
+  done
+
+# Move 10000 files into 10 folders
+
+
+
+for cfolder in {1..10}
+
+  do
+
+    #echo "Creating and Copying files to $cfolder"
+
+    #mkdir -p project1/${cfolder}000
+
+    #mv project1/hadoopfile${cfolder}*  project1/${cfolder}000
+
+print "Copy folder to HDFS"
+
+  done
+
+-- It is done in 10 minutes / 10000 files with 20000 lines each file
+
+hadoop distcp -m 100 file:///Users/admin/project1/1000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/2000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/2000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/3000 /user/project1
+hadoop distcp -m 100 file:///Users/admin/project1/4000 /user/project1
+.....
+hadoop distcp -m 100 file:///Users/admin/project1/9000 /user/project1
+
+hdfs dfs -copyFromLocal project1/1000 /user/project1 &   # run multiple jobs in the back ground to copy five parallel jobs to copy 5000 files
+hdfs dfs -copyFromLocal project1/2000 /user/project1 &
+hdfs dfs -copyFromLocal project1/3000 /user/project1 &
+hdfs dfs -copyFromLocal project1/4000 /user/project1 &
+hdfs dfs -copyFromLocal project1/5000 /user/project1 &
+
+
+It is slow and will take time. I need to check abother solution to copy in hdfs/
